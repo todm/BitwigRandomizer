@@ -1,0 +1,24 @@
+name: Build Release
+
+on:
+  release:
+    types: ["published"]
+
+jobs:
+  build:
+    uses: ./.github/workflows/_build.yaml
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: bitwigrandomizer
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./bitwigrandomizer.bwextension
+          asset_name: bitwigrandomizer.bwextension
+          asset_content_type: application/java-archive
